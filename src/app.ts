@@ -21,7 +21,7 @@ var options = {
 
 
 export class Application {
-    app: express.Application;
+    app: express.Application ;
     config = config;
 
     constructor() {
