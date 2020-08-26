@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from "typeorm";
+import { Groups } from "./Groups";
 
 export enum roleName {
     regular = 'regular',
@@ -17,7 +18,11 @@ export class Role {
       })
     name: roleName;
 
-    @Column("varchar", { array: true, nullable: true })
-    groupids: string[];
+    // @Column("varchar", { array: true, nullable: true })
+    // @OneToMany((type) => Groups, (group) => group.id)
+    // group: Groups;
+    @ManyToOne((type)=>Groups,(group)=>group.role)
+    @JoinColumn({ name: "groupids" })
+    groupids:Groups;
 
 }

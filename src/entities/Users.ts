@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Role } from "./Role";
 
 @Entity()
 export class Users {
@@ -9,6 +10,9 @@ export class Users {
     @Column({ unique: true })
     email: string;
 
+    // @ManyToOne((type)=>Role,(role)=>role.id)
+    // @JoinColumn({ name: "roleids" })
+    // roleids:Role[];
     @Column("varchar", { array: true })
     roleids: string[];
 

@@ -38,28 +38,40 @@ export class AuthHandler {
         if (!user) {
           return next(null, false);
         }
+        let primaryRole : string='';
+
+        const primaryRoleSetter = (primaryRole:string,roleName:string):string=>{
+          if(primaryRole == '') return roleName;
+          else if(primaryRole == 'globalManger' || roleName == 'globalManger') return 'globalManager';
+          else if(primaryRole == 'group' || roleName == 'group') return 'group';
+          else return 'manager';
+
+        }
         let role = [];
         let group = [];
         const roleService = new RoleService();
         const groupService = new GroupService();
         for (const i of user.roleids) {
           console.log("Role---->",i);
-          // console.log(await roleService.getById(i));
+          console.log(await roleService.getById(i));
           let currRole=await roleService.getById(i);
           role.push(Object(currRole));
-          if(currRole.groupids && currRole.groupids != null){
-            for (const j of currRole.groupids) {
-              group.push(Object(await groupService.getById(j)))
-            }
-          }
+          group.push(Object(await groupService.getById(currRole.id)))
+          primaryRole = primaryRoleSetter(primaryRole,currRole.name);          
         }
-
-        return next(undefined, Object({
+        // console.log("Primary Role----->",primaryRole);
+        
+        // console.log("User Varialble in auth----->",user);
+        let tokenData : Object = {
           id: user.id,
           email: user.email,
+          primaryRole : primaryRole,
           role: role,
           group: group
-        }));
+        };
+        console.log("Token Data------>",tokenData);
+        
+        return next(undefined, tokenData);
 
       } catch (err) {
         console.log("Error----->",err);

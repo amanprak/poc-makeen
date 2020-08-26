@@ -7,14 +7,20 @@ import itemRouter from './controllers/itemController';
 import userRouter from './controllers/userController';
 import { AuthHandler } from './config/authHandler';
 import tokenRouter from './controllers/tokenController';
+import * as welcomeController from './controllers/welcomeController';
+import { permissions } from './permissions/permissions';
+
 const router: Router = Router();
 const auth = new AuthHandler();
 
-router.use('/collection', auth.authenticate(), collectionRouter);
-router.use('/group', auth.authenticate(), groupRouter);
-router.use('/role', auth.authenticate(), roleRouter);
-router.use('/item', auth.authenticate(), itemRouter);
-router.use('/user', auth.authenticate(), userRouter);
 router.use('/token', tokenRouter);
+router.use('/collection',collectionRouter);
+router.use('/item', itemRouter);
+router.use(auth.authenticate());
+router.use(permissions);
+router.get('/', welcomeController.index);
+router.use('/group',  groupRouter);
+router.use('/role', roleRouter);
+router.use('/user', userRouter);
 
 export default router;

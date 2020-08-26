@@ -83,26 +83,32 @@ const groupRouter: Router = Router();
 groupRouter.route('/')
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const groupService = new GroupService();
-    if (Object(req.user).group.length == 0) {
-      try {
-        const response = await groupService.getAll();
-        res.status(HttpStatus.OK).json({
-          success: true,
-          data: response
-        });
-      } catch (err) {
-        let error: ErrorStructure = {
-          code: HttpStatus.BAD_REQUEST,
-          errorObj: err
-        };
-        next(error);
-      }
-    } else {
-      res.status(401).json({
-        success: false,
-        data: { "message": "You Are Not Authorized" }
+    // console.log("Req user----->",req.user);
+
+    // if (Object(req.user).group.length == 0) {
+    try {
+      const response = await groupService.getAll();
+      console.log("Groups------>", response);
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: response
       });
+    } catch (err) {
+      console.log("Error----->", err);
+
+      let error: ErrorStructure = {
+        code: HttpStatus.BAD_REQUEST,
+        errorObj: err
+      };
+      next(error);
     }
+    // } else {
+    //   res.status(401).json({
+    //     success: false,
+    //     data: { "message": "You Are Not Authorized" }
+    //   });
+    // }
   })
   .post(
     [
@@ -110,50 +116,50 @@ groupRouter.route('/')
       // body('collectionids').isArray(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-      if (Object(req.user).group.length == 0) {
-        const validationErrors = validationResult(req);
+      // if (Object(req.user).group.length == 0) {
+      const validationErrors = validationResult(req);
 
-        if (validationErrors.isEmpty()) {
-          const groupService = new GroupService();
-          const collectionService = new CollectionService()
-          req.body.collectionids = (typeof (req.body.collectionids) == 'string') ? JSON.parse(req.body.collectionids) : req.body.collectionids;
-          console.log("Id Checker---->", (await collectionService.idCheck(req.body.collectionids)));
+      if (validationErrors.isEmpty()) {
+        const groupService = new GroupService();
+        const collectionService = new CollectionService()
+        req.body.collectionids = (typeof (req.body.collectionids) == 'string') ? JSON.parse(req.body.collectionids) : req.body.collectionids;
+        console.log("Id Checker---->", (await collectionService.idCheck(req.body.collectionids)));
 
-          if (req.body.collectionids && !(await collectionService.idCheck(req.body.collectionids))) {
-            const error: ErrorStructure = {
-              code: HttpStatus.BAD_REQUEST,
-              errorObj: { message: "Collection doesnot exists" }
-            };
-            next(error);
-          }
-          await groupService.createGroup(req.body);
-          try {
-
-            const response = await groupService.insert(req.body);
-            res.status(HttpStatus.OK).json({
-              success: true,
-              data: response
-            });
-          } catch (err) {
-            const error: ErrorStructure = {
-              code: HttpStatus.BAD_REQUEST,
-              errorObj: err
-            };
-            next(error);
-          }
-        } else {
+        if (req.body.collectionids && !(await collectionService.idCheck(req.body.collectionids))) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorsArray: validationErrors.array()
+            errorObj: { message: "Collection doesnot exists" }
+          };
+          next(error);
+        }
+        await groupService.createGroup(req.body);
+        try {
+
+          const response = await groupService.insert(req.body);
+          res.status(HttpStatus.OK).json({
+            success: true,
+            data: response
+          });
+        } catch (err) {
+          const error: ErrorStructure = {
+            code: HttpStatus.BAD_REQUEST,
+            errorObj: err
           };
           next(error);
         }
       } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
+        const error: ErrorStructure = {
+          code: HttpStatus.BAD_REQUEST,
+          errorsArray: validationErrors.array()
+        };
+        next(error);
       }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     });
 
 
@@ -202,109 +208,109 @@ groupRouter.route('/:id')
     ],
     async (req: Request, res: Response, next: NextFunction) => {
 
-      if (Object(req.user).group.length == 0) {
-        const validationErrors = validationResult(req);
-        if (validationErrors.isEmpty()) {
-          const groupService = new GroupService();
-          try {
-            const collectionService = new CollectionService()
-            req.body.collectionids = (typeof (req.body.collectionids) == 'string') ? JSON.parse(req.body.collectionids) : req.body.collectionids;
-            if (req.body.collectionids && !(await collectionService.idCheck(req.body.collectionids))) {
-              const error: ErrorStructure = {
-                code: HttpStatus.BAD_REQUEST,
-                errorObj: { message: "Collection doesnot exists" }
-              };
-              next(error);
-            }
-            const group = await groupService.getById(req.params.id);
-            req.body.collectionids = (typeof (req.body.collectionids) == 'string') ? JSON.parse(req.body.collectionids) : req.body.collectionids;
-
-            if (!group) {
-              return res.status(HttpStatus.NOT_FOUND).json({
-                success: false,
-                message: `No Id Found`
-              });
-            }
-
-            if (req.body.name) group.name = req.body.name;
-            if (req.body.collectionids) group.collectionids = req.body.collectionids;
-
-            // console.log("Req------>",req.body);
-            // console.log("Groups------>",group);
-
-            const updatedGroup = await groupService.update(group);
-            res.status(HttpStatus.OK).json({
-              success: true,
-              user: updatedGroup
-            });
-          } catch (err) {
+      // if (Object(req.user).group.length == 0) {
+      const validationErrors = validationResult(req);
+      if (validationErrors.isEmpty()) {
+        const groupService = new GroupService();
+        try {
+          const collectionService = new CollectionService()
+          req.body.collectionids = (typeof (req.body.collectionids) == 'string') ? JSON.parse(req.body.collectionids) : req.body.collectionids;
+          if (req.body.collectionids && !(await collectionService.idCheck(req.body.collectionids))) {
             const error: ErrorStructure = {
               code: HttpStatus.BAD_REQUEST,
-              errorObj: err
+              errorObj: { message: "Collection doesnot exists" }
             };
             next(error);
           }
-        } else {  
+          const group = await groupService.getById(req.params.id);
+          req.body.collectionids = (typeof (req.body.collectionids) == 'string') ? JSON.parse(req.body.collectionids) : req.body.collectionids;
+
+          if (!group) {
+            return res.status(HttpStatus.NOT_FOUND).json({
+              success: false,
+              message: `No Id Found`
+            });
+          }
+
+          if (req.body.name) group.name = req.body.name;
+          if (req.body.collectionids) group.collectionids = req.body.collectionids;
+
+          // console.log("Req------>",req.body);
+          // console.log("Groups------>",group);
+
+          const updatedGroup = await groupService.update(group);
+          res.status(HttpStatus.OK).json({
+            success: true,
+            user: updatedGroup
+          });
+        } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorsArray: validationErrors.array()
+            errorObj: err
           };
           next(error);
         }
       } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
+        const error: ErrorStructure = {
+          code: HttpStatus.BAD_REQUEST,
+          errorsArray: validationErrors.array()
+        };
+        next(error);
       }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     })
   .delete(
     [
       body('id').optional().isUUID(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-      if (Object(req.user).group.length == 0) {
-        const validationErrors = validationResult(req);
-        if (validationErrors.isEmpty()) {
-          const groupService = new GroupService();
-          try {
-            const group = await groupService.getById(req.params.id);
+      // if (Object(req.user).group.length == 0) {
+      const validationErrors = validationResult(req);
+      if (validationErrors.isEmpty()) {
+        const groupService = new GroupService();
+        try {
+          const group = await groupService.getById(req.params.id);
 
-            if (!group) {
-              return res.status(HttpStatus.NOT_FOUND).json({
-                success: false,
-                message: `No Id Found`
-              });
-            }
-            // else{
-            let recordId: string = req.params.id;
-            // }
-
-            const deleteRes = await groupService.remove(recordId);
-            res.status(HttpStatus.NO_CONTENT).json({
-              success: true,
-              deleteRes
+          if (!group) {
+            return res.status(HttpStatus.NOT_FOUND).json({
+              success: false,
+              message: `No Id Found`
             });
-          } catch (err) {
-            const error: ErrorStructure = {
-              code: HttpStatus.BAD_REQUEST,
-              errorObj: err
-            };
-            next(error);
           }
-        } else {  
+          // else{
+          let recordId: string = req.params.id;
+          // }
+
+          const deleteRes = await groupService.remove(recordId);
+          res.status(HttpStatus.NO_CONTENT).json({
+            success: true,
+            deleteRes
+          });
+        } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorsArray: validationErrors.array()
+            errorObj: err
           };
           next(error);
         }
       } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
+        const error: ErrorStructure = {
+          code: HttpStatus.BAD_REQUEST,
+          errorsArray: validationErrors.array()
+        };
+        next(error);
       }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     });
 
 groupRouter.route('/push/:id')
@@ -314,54 +320,54 @@ groupRouter.route('/push/:id')
       body('collectionids').isUUID(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-      if (Object(req.user).group.length == 0) {
-        const validationErrors = validationResult(req);
-        if (validationErrors.isEmpty()) {
-          const groupService = new GroupService();
-          try {
-            const group = await groupService.getById(req.params.id);
+      // if (Object(req.user).group.length == 0) {
+      const validationErrors = validationResult(req);
+      if (validationErrors.isEmpty()) {
+        const groupService = new GroupService();
+        try {
+          const group = await groupService.getById(req.params.id);
 
-            if (!group) {
-              return res.status(HttpStatus.NOT_FOUND).json({
-                success: false,
-                message: `No Id Found`
-              });
-            }
-
-            if (req.body.name) group.name = req.body.name;
-            if (req.body.collectionids) {
-              let collectionId: string = req.body.collectionids;
-              group.collectionids.push(collectionId)
-
-            }
-
-            // console.log("Req------>",req.body);
-            // console.log("Groups------>",group);
-
-            const updatedGroup = await groupService.update(group);
-            res.status(HttpStatus.OK).json({
-              success: true,
-              user: updatedGroup
+          if (!group) {
+            return res.status(HttpStatus.NOT_FOUND).json({
+              success: false,
+              message: `No Id Found`
             });
-          } catch (err) {
-            const error: ErrorStructure = {
-              code: HttpStatus.BAD_REQUEST,
-              errorObj: err
-            };
-            next(error);
           }
-        } else {  
+
+          if (req.body.name) group.name = req.body.name;
+          if (req.body.collectionids) {
+            let collectionId: string = req.body.collectionids;
+            group.collectionids.push(collectionId)
+
+          }
+
+          // console.log("Req------>",req.body);
+          // console.log("Groups------>",group);
+
+          const updatedGroup = await groupService.update(group);
+          res.status(HttpStatus.OK).json({
+            success: true,
+            user: updatedGroup
+          });
+        } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorsArray: validationErrors.array()
+            errorObj: err
           };
           next(error);
         }
       } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
+        const error: ErrorStructure = {
+          code: HttpStatus.BAD_REQUEST,
+          errorsArray: validationErrors.array()
+        };
+        next(error);
       }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     })
 export default groupRouter;

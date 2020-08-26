@@ -5,6 +5,7 @@ import { CollectionService } from '../services/collectionService';
 import * as sw from '../config/swagger.js'
 import { ErrorStructure } from '../utilites/ErrorStructure';
 import { GroupService } from '../services/groupService';
+import { request } from 'http';
 
 // GET
 sw.swagger({
@@ -71,34 +72,36 @@ collectionRouter.route('/')
     const collectionService = new CollectionService();
 
     try {
-      const groupService = new GroupService();
-      if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-        let finalResult = []
-        for (const i of Object(req.user).group) {
-          let temp = (await groupService.getById(i.id));
-          for (const iterator of temp.collectionids) {
-            let tempRes = await collectionService.getById(iterator);
-            console.log(tempRes);
+      console.log("Request----->", req.user);
 
-            if (finalResult.indexOf(tempRes) == -1) finalResult.push(tempRes)
-          }
-        }
-        res.status(HttpStatus.OK).json({
-          success: true,
-          data: finalResult
-        });
-      } else if (Object(req.user).group.length == 0) {
-        const response = await collectionService.getAll();
-        res.status(HttpStatus.OK).json({
-          success: true,
-          data: response
-        });
-      } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
-      }
+      // const groupService = new GroupService();
+      // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+      //   let finalResult = []
+      //   for (const i of Object(req.user).group) {
+      //     let temp = (await groupService.getById(i.id));
+      //     for (const iterator of temp.collectionids) {
+      //       let tempRes = await collectionService.getById(iterator);
+      //       console.log(tempRes);
+
+      //       if (finalResult.indexOf(tempRes) == -1) finalResult.push(tempRes)
+      //     }
+      //   }
+      //   res.status(HttpStatus.OK).json({
+      //     success: true,
+      //     data: finalResult
+      //   });
+      // } else if (Object(req.user).group.length == 0) {
+      const response = await collectionService.getAll();
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: response
+      });
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
 
 
     } catch (err) {
@@ -125,15 +128,15 @@ collectionRouter.route('/')
           console.log("Response----->", response);
 
           const groupService = new GroupService();
-          if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-            // let response = [];
-            for (const i of Object(req.user).group) {
-              let temp = (await groupService.getById(i.id));
-              temp.collectionids.push(Object(response).id);
-              groupService.update(temp);
+          // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+          // let response = [];
+          for (const i of Object(req.user).group) {
+            let temp = (await groupService.getById(i.id));
+            temp.collectionids.push(Object(response).id);
+            groupService.update(temp);
 
-            }
           }
+          // }
           res.status(HttpStatus.OK).json({
             success: true,
             data: response
@@ -165,54 +168,54 @@ collectionRouter.route('/:id')
       const collection = await collectionService.getById(req.params.id);
       console.log("Collection----->", collection);
       let validRole = 0;
-      if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-        for (const i of Object(req.user).group) {
-          let temp = (await collectionService.hasGroup(i.id));
-          console.log("Temp------>", req.body.roleids);
-          if (temp.includes(req.params.id)) {
-            validRole = 1;
-            break;
-          }
-        }
-        if (validRole == 0) {
-          const error: ErrorStructure = {
-            code: 401,
-            errorObj: { "message": "You are not authorized" }
-          };
-          next(error);
-        } else {
-          if (!collection) {
-            res.status(HttpStatus.NOT_FOUND).json({
-              success: false,
-              message: `Item Not Found`
-            });
-            return;
-          }
-          res.status(HttpStatus.OK).json({
-            success: true,
-            collection: collection
-          });
-        }
-      }
-      else if (Object(req.user).group.length == 0) {
+      // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+      //   for (const i of Object(req.user).group) {
+      //     let temp = (await collectionService.hasGroup(i.id));
+      //     console.log("Temp------>", req.body.roleids);
+      //     if (temp.includes(req.params.id)) {
+      //       validRole = 1;
+      //       break;
+      //     }
+      //   }
+      //   if (validRole == 0) {
+      //     const error: ErrorStructure = {
+      //       code: 401,
+      //       errorObj: { "message": "You are not authorized" }
+      //     };
+      //     next(error);
+      //   } else {
+      //     if (!collection) {
+      //       res.status(HttpStatus.NOT_FOUND).json({
+      //         success: false,
+      //         message: `Item Not Found`
+      //       });
+      //       return;
+      //     }
+      //     res.status(HttpStatus.OK).json({
+      //       success: true,
+      //       collection: collection
+      //     });
+      //   }
+      // }
+      // else if (Object(req.user).group.length == 0) {
 
-        if (!collection) {
-          res.status(HttpStatus.NOT_FOUND).json({
-            success: false,
-            message: `Item Not Found`
-          });
-          return;
-        }
-        res.status(HttpStatus.OK).json({
-          success: true,
-          collection: collection
-        });
-      } else {
-        res.status(401).json({
+      if (!collection) {
+        res.status(HttpStatus.NOT_FOUND).json({
           success: false,
-          data: { "message": "You Are Not Authorized" }
+          message: `Item Not Found`
         });
+        return;
       }
+      res.status(HttpStatus.OK).json({
+        success: true,
+        collection: collection
+      });
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
       // if collection not found
 
       // return found collection
@@ -239,59 +242,59 @@ collectionRouter.route('/:id')
         try {
           const collection = await collectionService.getById(req.params.id);
           let validRole = 0;
-          if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-            for (const i of Object(req.user).group) {
-              let temp = (await collectionService.hasGroup(i.id));
-              console.log("Temp------>", req.body.roleids);
-              if (temp.includes(req.params.id)) {
-                validRole = 1;
-                break;
-              }
-            }
-            if (validRole == 0) {
-              const error: ErrorStructure = {
-                code: 401,
-                errorObj: { "message": "You are not authorized" }
-              };
-              next(error);
-            } else {
-              if (!collection) {
-                return res.status(HttpStatus.NOT_FOUND).json({
-                  success: false,
-                  message: `No Id Found`
-                });
-              }
+          // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+          //   for (const i of Object(req.user).group) {
+          //     let temp = (await collectionService.hasGroup(i.id));
+          //     console.log("Temp------>", req.body.roleids);
+          //     if (temp.includes(req.params.id)) {
+          //       validRole = 1;
+          //       break;
+          //     }
+          //   }
+          //   if (validRole == 0) {
+          //     const error: ErrorStructure = {
+          //       code: 401,
+          //       errorObj: { "message": "You are not authorized" }
+          //     };
+          //     next(error);
+          //   } else {
+          //     if (!collection) {
+          //       return res.status(HttpStatus.NOT_FOUND).json({
+          //         success: false,
+          //         message: `No Id Found`
+          //       });
+          //     }
 
-              if (req.body.name) collection.name = req.body.name;
+          //     if (req.body.name) collection.name = req.body.name;
 
-              const updatedCollection = await collectionService.update(collection);
-              res.status(HttpStatus.OK).json({
-                success: true,
-                user: updatedCollection
-              });
-            }
-          }
-          else if (Object(req.user).group.length == 0) {
-            if (!collection) {
-              return res.status(HttpStatus.NOT_FOUND).json({
-                success: false,
-                message: `No Id Found`
-              });
-            }
-
-            if (req.body.name) collection.name = req.body.name;
-
-            const updatedCollection = await collectionService.update(collection);
-            res.status(HttpStatus.OK).json({
-              success: true,
-              user: updatedCollection
-            });
-          } else {
-            res.status(401).json({
+          //     const updatedCollection = await collectionService.update(collection);
+          //     res.status(HttpStatus.OK).json({
+          //       success: true,
+          //       user: updatedCollection
+          //     });
+          //   }
+          // }
+          // else if (Object(req.user).group.length == 0) {
+          if (!collection) {
+            return res.status(HttpStatus.NOT_FOUND).json({
               success: false,
-              data: { "message": "You Are Not Authorized" }
+              message: `No Id Found`
             });
           }
+
+          if (req.body.name) collection.name = req.body.name;
+
+          const updatedCollection = await collectionService.update(collection);
+          res.status(HttpStatus.OK).json({
+            success: true,
+            user: updatedCollection
+          });
+          // } else {
+          //   res.status(401).json({
+          //     success: false,
+          //     data: { "message": "You Are Not Authorized" }
+          //   });
+          // }
 
         } catch (err) {
           // db errors e.g. unique constraints etc
@@ -321,40 +324,40 @@ collectionRouter.route('/:id')
           const collection = await collectionService.getById(req.params.id);
 
           let validRole = 0;
-          if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-            for (const i of Object(req.user).group) {
-              let temp = (await collectionService.hasGroup(i.id));
-              console.log("Temp------>", req.body.roleids);
-              if (temp.includes(req.params.id)) {
-                validRole = 1;
-                break;
-              }
-            }
-            if (validRole == 0) {
-              const error: ErrorStructure = {
-                code: 401,
-                errorObj: { "message": "You are not authorized" }
-              };
-              next(error);
-            } else {
-              let recordId: string = req.params.id;
-    
-              const deleteRes = await collectionService.remove(recordId);
-              res.status(HttpStatus.NO_CONTENT).json({
-                success: true,
-                deleteRes
-              });
-            }
-          }
-          else if (Object(req.user).group.length == 0) {
-            let recordId: string = req.params.id;
-  
-            const deleteRes = await collectionService.remove(recordId);
-            res.status(HttpStatus.NO_CONTENT).json({
-              success: true,
-              deleteRes
-            });
-          }
+          // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+          //   for (const i of Object(req.user).group) {
+          //     let temp = (await collectionService.hasGroup(i.id));
+          //     console.log("Temp------>", req.body.roleids);
+          //     if (temp.includes(req.params.id)) {
+          //       validRole = 1;
+          //       break;
+          //     }
+          //   }
+          //   if (validRole == 0) {
+          //     const error: ErrorStructure = {
+          //       code: 401,
+          //       errorObj: { "message": "You are not authorized" }
+          //     };
+          //     next(error);
+          //   } else {
+          //     let recordId: string = req.params.id;
+
+          //     const deleteRes = await collectionService.remove(recordId);
+          //     res.status(HttpStatus.NO_CONTENT).json({
+          //       success: true,
+          //       deleteRes
+          //     });
+          //   }
+          // }
+          // else if (Object(req.user).group.length == 0) {
+          let recordId: string = req.params.id;
+
+          const deleteRes = await collectionService.remove(recordId);
+          res.status(HttpStatus.NO_CONTENT).json({
+            success: true,
+            deleteRes
+          });
+          // }
           if (!collection) {
             return res.status(HttpStatus.NOT_FOUND).json({
               success: false,

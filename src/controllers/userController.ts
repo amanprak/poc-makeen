@@ -215,17 +215,18 @@ userRouter.route('/:id')
             let group = [];
             const roleService = new RoleService();
             const groupService = new GroupService();
-            for (const i of user.roleids) {
-                console.log("Role---->", i);
-                // console.log(await roleService.getById(i));
-                let currRole = await roleService.getById(i);
-                role.push(Object(currRole).id);
-                if (currRole.groupids && currRole.groupids != null) {
-                    for (const j of currRole.groupids) {
-                        group.push(Object(await groupService.getById(j)).id)
-                    }
-                }
-            }
+            //TODO
+            // for (const i of user.roleids) {
+            //     console.log("Role---->", i);
+            //     // console.log(await roleService.getById(i));
+            //     let currRole = await roleService.getById(i);
+            //     role.push(Object(currRole).id);
+            //     if (currRole.groupids && currRole.groupids != null) {
+            //         for (const j of groupids) {
+            //             group.push(Object(await groupService.getById(j)).id)
+            //         }
+            //     }
+            // }
 
             let validRole = 0;
             if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {

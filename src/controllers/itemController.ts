@@ -74,31 +74,31 @@ itemRouter.route('/')
 
     try {
 
-      if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-        let response = [];
-        for (const i of Object(req.user).group) {
-          let temp = (await itemService.getItemByGroup(i.id));
-          if (response.indexOf(temp) == -1) response.push(temp)
-          console.log("User---->", response);
+      // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+      //   let response = [];
+      //   for (const i of Object(req.user).group) {
+      //     let temp = (await itemService.getItemByGroup(i.id));
+      //     if (response.indexOf(temp) == -1) response.push(temp)
+      //     console.log("User---->", response);
 
-        }
-        res.status(HttpStatus.OK).json({
-          success: true,
-          data: response
-        });
-      } else if (Object(req.user).group.length == 0) {
-        // const response = await userService.getAll();
-        const response = await itemService.getAll();
-        res.status(HttpStatus.OK).json({
-          success: true,
-          data: response
-        });
-      } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
-      }
+      //   }
+      //   res.status(HttpStatus.OK).json({
+      //     success: true,
+      //     data: response
+      //   });
+      // } else if (Object(req.user).group.length == 0) {
+      // const response = await userService.getAll();
+      const response = await itemService.getAll();
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: response
+      });
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
 
 
       // const response = await itemService.getAll();
@@ -131,31 +131,31 @@ itemRouter.route('/')
         // const collectionService = new CollectionService();
 
         try {
-        //   let validRole = 0;
-        //   if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-        //     for (const i of Object(req.user).group) {
-        //       let temp = (await collectionService.hasGroup(i.id));
-        //       console.log("Temp------>", req.body.roleids);
+          //   let validRole = 0;
+          //   if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+          //     for (const i of Object(req.user).group) {
+          //       let temp = (await collectionService.hasGroup(i.id));
+          //       console.log("Temp------>", req.body.roleids);
 
-        //       if (temp.some(item => (req.body.roleids.includes(item)))) {
-        //         console.log("Valid Case");
-        //         validRole = 1;
-        //         break;
-        //       }
-        //     }
-        //     if (validRole == 0) {
-        //       const error: ErrorStructure = {
-        //         code: 401,
-        //         errorObj: { "message": "You are not authorized" }
-        //       };
-        //       next(error);
-            // } else {
-        //       // await itemService.createItem(req.body);
-              const response = await itemService.insert(req.body);
-              res.status(HttpStatus.OK).json({
-                success: true,
-                data: response
-              });
+          //       if (temp.some(item => (req.body.roleids.includes(item)))) {
+          //         console.log("Valid Case");
+          //         validRole = 1;
+          //         break;
+          //       }
+          //     }
+          //     if (validRole == 0) {
+          //       const error: ErrorStructure = {
+          //         code: 401,
+          //         errorObj: { "message": "You are not authorized" }
+          //       };
+          //       next(error);
+          // } else {
+          //       // await itemService.createItem(req.body);
+          const response = await itemService.insert(req.body);
+          res.status(HttpStatus.OK).json({
+            success: true,
+            data: response
+          });
           //   }
           // } else if (Object(req.user).group.length == 0) {
           //   const response = await itemService.insert(req.body);
@@ -232,18 +232,18 @@ itemRouter.route('/:id')
       //     });
       //   }
       // } else if (Object(req.user).group.length == 0) {
-        if (!item) {
-          res.status(HttpStatus.NOT_FOUND).json({
-            success: false,
-            message: `Item Not Found`
-          });
-          return;
-        }
-        // return found item
-        res.status(HttpStatus.OK).json({
-          success: true,
-          item: item
+      if (!item) {
+        res.status(HttpStatus.NOT_FOUND).json({
+          success: false,
+          message: `Item Not Found`
         });
+        return;
+      }
+      // return found item
+      res.status(HttpStatus.OK).json({
+        success: true,
+        item: item
+      });
       // } else {
       //   const error: ErrorStructure = {
       //     code: 401,
@@ -312,21 +312,21 @@ itemRouter.route('/:id')
           //     });
           //   }
           // } else if (Object(req.user).group.length == 0) {
-            if (!item) {
-              return res.status(HttpStatus.NOT_FOUND).json({
-                success: false,
-                message: `No Id Found`
-              });
-            }
-
-            if (req.body.name) item.name = req.body.name;
-            if (req.body.collection) item.name = req.body.collection;
-
-            const updatedItem = await itemService.update(item);
-            res.status(HttpStatus.OK).json({
-              success: true,
-              user: updatedItem
+          if (!item) {
+            return res.status(HttpStatus.NOT_FOUND).json({
+              success: false,
+              message: `No Id Found`
             });
+          }
+
+          if (req.body.name) item.name = req.body.name;
+          if (req.body.collection) item.name = req.body.collection;
+
+          const updatedItem = await itemService.update(item);
+          res.status(HttpStatus.OK).json({
+            success: true,
+            user: updatedItem
+          });
           // } else {
           //   const error: ErrorStructure = {
           //     code: 401,
@@ -398,21 +398,21 @@ itemRouter.route('/:id')
           //     });
           //   }
           // } else if (Object(req.user).group.length == 0) {
-            if (!item) {
-              return res.status(HttpStatus.NOT_FOUND).json({
-                success: false,
-                message: `No Id Found`
-              });
-            }
-            // else{
-            let recordId: string = req.params.id;
-            // }
-
-            const deleteRes = await itemService.remove(recordId);
-            res.status(HttpStatus.NO_CONTENT).json({
-              success: true,
-              deleteRes
+          if (!item) {
+            return res.status(HttpStatus.NOT_FOUND).json({
+              success: false,
+              message: `No Id Found`
             });
+          }
+          // else{
+          let recordId: string = req.params.id;
+          // }
+
+          const deleteRes = await itemService.remove(recordId);
+          res.status(HttpStatus.NO_CONTENT).json({
+            success: true,
+            deleteRes
+          });
           // } else {
           //   const error: ErrorStructure = {
           //     code: 401,

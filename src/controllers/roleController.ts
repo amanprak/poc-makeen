@@ -35,7 +35,9 @@ sw.swagger({
   tags: "ROLE",
   fields: [
     "name",
-    { name: "groupids", required: false, in: "formData", type: "object" },
+    "groupids"
+    // { name: "groupids", required: false, in: "formData", type: "object" },
+    // { name: "groupids", required: false, in: "formData", type: "object" },
   ]
 })
 
@@ -82,7 +84,7 @@ const roleRouter: Router = Router();
 roleRouter.route('/')
   .get(async (req: Request, res: Response, next: NextFunction) => {
     const roleService = new RoleService();
-    if (Object(req.user).group.length == 0) {
+    // if (Object(req.user).group.length == 0) {
       try {
         const response = await roleService.getAll();
         res.status(HttpStatus.OK).json({
@@ -96,12 +98,12 @@ roleRouter.route('/')
         };
         next(error);
       }
-    } else {
-      res.status(401).json({
-        success: false,
-        data: { "message": "You Are Not Authorized" }
-      });
-    }
+    // } else {
+    //   res.status(401).json({
+    //     success: false,
+    //     data: { "message": "You Are Not Authorized" }
+    //   });
+    // }
   })
   .post(
     [
@@ -109,7 +111,7 @@ roleRouter.route('/')
       // body('groupids').isArray(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-      if (Object(req.user).group.length == 0) {
+      // if (Object(req.user).group.length == 0) {
         const validationErrors = validationResult(req);
 
         if (validationErrors.isEmpty()) {
@@ -146,23 +148,26 @@ roleRouter.route('/')
           };
           next(error);
         }
-      } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
-      }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     });
 
 
 roleRouter.route('/:id')
 
   .get(async (req: Request, res: Response, next: NextFunction) => {
-    if (Object(req.user).group.length == 0) {
+    // if (Object(req.user).group.length == 0) {
+      console.log("Hello");
+      
       const roleService = new RoleService();
       try {
         const role = await roleService.getById(req.params.id);
-
+        console.log("Role------>",role);
+        
         // if role not found
         if (!role) {
           res.status(HttpStatus.NOT_FOUND).json({
@@ -178,18 +183,20 @@ roleRouter.route('/:id')
         });
 
       } catch (err) {
+        console.log("Error----->",err);
+        
         const error: ErrorStructure = {
           code: HttpStatus.BAD_REQUEST,
           errorObj: err
         };
         next(error);
       }
-    } else {
-      res.status(401).json({
-        success: false,
-        data: { "message": "You Are Not Authorized" }
-      });
-    }
+    // } else {
+    //   res.status(401).json({
+    //     success: false,
+    //     data: { "message": "You Are Not Authorized" }
+    //   });
+    // }
   })
 
   .put(
@@ -198,7 +205,7 @@ roleRouter.route('/:id')
       // body('groupids').isArray(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-      if (Object(req.user).group.length == 0) {
+      // if (Object(req.user).group.length == 0) {
         const validationErrors = validationResult(req);
         if (validationErrors.isEmpty()) {
           const roleService = new RoleService();
@@ -246,19 +253,19 @@ roleRouter.route('/:id')
           };
           next(error);
         }
-      } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
-      }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     })
   .delete(
     [
       body('id').optional().isUUID(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-      if (Object(req.user).group.length == 0) {
+      // if (Object(req.user).group.length == 0) {
         const validationErrors = validationResult(req);
         if (validationErrors.isEmpty()) {
           const roleService = new RoleService();
@@ -294,12 +301,12 @@ roleRouter.route('/:id')
           };
           next(error);
         }
-      } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
-      }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     });
 
 roleRouter.route('/push/:id')
@@ -309,7 +316,7 @@ roleRouter.route('/push/:id')
       body('groupids').isUUID(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-      if (Object(req.user).group.length == 0) {
+      // if (Object(req.user).group.length == 0) {
         const validationErrors = validationResult(req);
         if (validationErrors.isEmpty()) {
           const roleService = new RoleService();
@@ -324,11 +331,12 @@ roleRouter.route('/push/:id')
             }
 
             if (req.body.name) role.name = req.body.name;
-            if (req.body.groupids) {
-              let groupId: string = req.body.groupids;
-              role.groupids.push(groupId)
+            //TODO
+            // if (req.body.groupids) {
+            //   let groupId: string = req.body.groupids;
+            //   role.groupids.push(groupId)
 
-            }
+            // }
 
             // console.log("Req------>",req.body);
             // console.log("Role------>",role);
@@ -353,11 +361,11 @@ roleRouter.route('/push/:id')
           next(error);
         }
 
-      } else {
-        res.status(401).json({
-          success: false,
-          data: { "message": "You Are Not Authorized" }
-        });
-      }
+      // } else {
+      //   res.status(401).json({
+      //     success: false,
+      //     data: { "message": "You Are Not Authorized" }
+      //   });
+      // }
     })
 export default roleRouter;
