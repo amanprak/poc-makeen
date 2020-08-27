@@ -108,7 +108,7 @@ roleRouter.route('/')
   .post(
     [
       body('name').isLength({ min: 1 }),
-      // body('groupids').isArray(),
+      body('groupids').isUUID(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
       // if (Object(req.user).group.length == 0) {
@@ -118,15 +118,15 @@ roleRouter.route('/')
           const roleService = new RoleService();
           await roleService.createRole(req.body);
           try {
-            req.body.groupids = (typeof (req.body.groupids) == 'string') ? JSON.parse(req.body.groupids) : req.body.groupids;
-            const groupService = new GroupService()
-            if (req.body.groupids && !(await groupService.idCheck(req.body.groupids))) {
-              const error: ErrorStructure = {
-                code: HttpStatus.BAD_REQUEST,
-                errorObj: { message: "Groups doesnot exists" }
-              };
-              next(error);
-            }
+            // req.body.groupids = (typeof (req.body.groupids) == 'string') ? JSON.parse(req.body.groupids) : req.body.groupids;
+            // const groupService = new GroupService()
+            // if (req.body.groupids && !(await groupService.idCheck(req.body.groupids))) {
+            //   const error: ErrorStructure = {
+            //     code: HttpStatus.BAD_REQUEST,
+            //     errorObj: { message: "Groups doesnot exists" }
+            //   };
+            //   next(error);
+            // }
             const response = await roleService.insert(req.body);
             res.status(HttpStatus.OK).json({
               success: true,

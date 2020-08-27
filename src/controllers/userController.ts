@@ -80,36 +80,42 @@ userRouter.route('/')
 
         try {
             console.log("Request", Object(req.user));
-            if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-                let response = [];
-                // console.log("Id------>",req.body.user.group[0].id);
-                for (const i of Object(req.user).group) {
-                    // console.log("Group Id-------->",i.id);
-                    let temp = (await userService.getUserByGroup(i.id));
-                    // console.log("Temp------>",users.indexOf(temp));
-                    // console.log("Temp11------>",temp);
-                    if (response.indexOf(temp) == -1) response.push(temp)
-                    console.log("User---->", response);
+            // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+            //     let response = [];
+            //     // console.log("Id------>",req.body.user.group[0].id);
+            //     for (const i of Object(req.user).group) {
+            //         // console.log("Group Id-------->",i.id);
+            //         let temp = (await userService.getUserByGroup(i.id));
+            //         // console.log("Temp------>",users.indexOf(temp));
+            //         // console.log("Temp11------>",temp);
+            //         if (response.indexOf(temp) == -1) response.push(temp)
+            //         console.log("User---->", response);
 
-                }
-                // const response = await userService.getAll();
-                res.status(HttpStatus.OK).json({
-                    success: true,
-                    data: response
-                });
-            } else if (Object(req.user).group.length == 0) {
-                // const response = await userService.getAll();
-                const response = await userService.getAll();
-                res.status(HttpStatus.OK).json({
-                    success: true,
-                    data: response
-                });
-            } else {
-                res.status(401).json({
-                    success: false,
-                    data: { "message": "You Are Not Authorized" }
-                });
-            }
+            //     }
+            //     // const response = await userService.getAll();
+            //     res.status(HttpStatus.OK).json({
+            //         success: true,
+            //         data: response
+            //     });
+            // } else if (Object(req.user).group.length == 0) {
+            // const response = await userService.getAll();
+            console.log("Req User-------->",req.user);
+            const response = await userService.getUserByGroup(req.user['filter']);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                data: response
+            });
+            // const response = await userService.getAll();
+            // res.status(HttpStatus.OK).json({
+            //     success: true,
+            //     data: response
+            // });
+            // } else {
+            //     res.status(401).json({
+            //         success: false,
+            //         data: { "message": "You Are Not Authorized" }
+            //     });
+            // }
         } catch (err) {
             console.log("Error----->", err);
 
@@ -141,46 +147,46 @@ userRouter.route('/')
                         next(error);
                     } else {
                         let validRole = 0;
-                        if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-                            for (const i of Object(req.user).group) {
-                                let temp = (await roleService.hasGroup(i.id));
-                                console.log("Temp------>", req.body.roleids);
+                        // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+                        //     for (const i of Object(req.user).group) {
+                        //         let temp = (await roleService.hasGroup(i.id));
+                        //         console.log("Temp------>", req.body.roleids);
 
-                                if (temp.some(item => (req.body.roleids.includes(item)))) {
-                                    console.log("Valid Case");
+                        //         if (temp.some(item => (req.body.roleids.includes(item)))) {
+                        //             console.log("Valid Case");
 
-                                    validRole = 1;
-                                    break;
-                                }
-                            }
-                            if (validRole == 0) {
-                                const error: ErrorStructure = {
-                                    code: 401,
-                                    errorObj: { "message": "You are not authorized" }
-                                };
-                                next(error);
-                            } else {
-                                await userService.createUser(req.body);
-                                const response = await userService.insert(req.body);
-                                res.status(HttpStatus.OK).json({
-                                    success: true,
-                                    data: response
-                                });
-                            }
-                        } else if (Object(req.user).group.length == 0) {
-                            await userService.createUser(req.body);
-                            const response = await userService.insert(req.body);
-                            res.status(HttpStatus.OK).json({
-                                success: true,
-                                data: response
-                            });
-                        } else {
-                            const error: ErrorStructure = {
-                                code: 401,
-                                errorObj: { "message": "You are not authorized" }
-                            };
-                            next(error);
-                        }
+                        //             validRole = 1;
+                        //             break;
+                        //         }
+                        //     }
+                        //     if (validRole == 0) {
+                        //         const error: ErrorStructure = {
+                        //             code: 401,
+                        //             errorObj: { "message": "You are not authorized" }
+                        //         };
+                        //         next(error);
+                        //     } else {
+                        //         await userService.createUser(req.body);
+                        //         const response = await userService.insert(req.body);
+                        //         res.status(HttpStatus.OK).json({
+                        //             success: true,
+                        //             data: response
+                        //         });
+                        //     }
+                        // } else if (Object(req.user).group.length == 0) {
+                        await userService.createUser(req.body);
+                        const response = await userService.insert(req.body);
+                        res.status(HttpStatus.OK).json({
+                            success: true,
+                            data: response
+                        });
+                        // } else {
+                        //     const error: ErrorStructure = {
+                        //         code: 401,
+                        //         errorObj: { "message": "You are not authorized" }
+                        //     };
+                        //     next(error);
+                        // }
 
                     }
                 } catch (err) {
@@ -214,7 +220,7 @@ userRouter.route('/:id')
             let role = [];
             let group = [];
             const roleService = new RoleService();
-            const groupService = new GroupService();
+            // const groupService = new GroupService();
             //TODO
             // for (const i of user.roleids) {
             //     console.log("Role---->", i);
@@ -229,56 +235,56 @@ userRouter.route('/:id')
             // }
 
             let validRole = 0;
-            if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-                for (const i of Object(req.user).group) {
-                    let temp = (await roleService.hasGroup(i.id));
-                    // console.log("Temp------>", req.body.roleids);
+            // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+            //     for (const i of Object(req.user).group) {
+            //         let temp = (await roleService.hasGroup(i.id));
+            //         // console.log("Temp------>", req.body.roleids);
 
-                    if (temp.some(item => (user.roleids.includes(item)))) {
-                        console.log("Valid Case");
+            //         if (temp.some(item => (user.roleids.includes(item)))) {
+            //             console.log("Valid Case");
 
-                        validRole = 1;
-                        break;
-                    }
-                }
-                if (validRole == 0) {
-                    const error: ErrorStructure = {
-                        code: 401,
-                        errorObj: { "message": "You are not authorized" }
-                    };
-                    next(error);
-                } else {
-                    if (!user) {
-                        res.status(HttpStatus.NOT_FOUND).json({
-                            success: false,
-                            message: `Item Not Found`
-                        });
-                        return;
-                    }
-                    res.status(HttpStatus.OK).json({
-                        success: true,
-                        user: user
-                    });
-                }
-            } else if (Object(req.user).group.length == 0) {
-                if (!user) {
-                    res.status(HttpStatus.NOT_FOUND).json({
-                        success: false,
-                        message: `Item Not Found`
-                    });
-                    return;
-                }
-                res.status(HttpStatus.OK).json({
-                    success: true,
-                    user: user
+            //             validRole = 1;
+            //             break;
+            //         }
+            //     }
+            //     if (validRole == 0) {
+            //         const error: ErrorStructure = {
+            //             code: 401,
+            //             errorObj: { "message": "You are not authorized" }
+            //         };
+            //         next(error);
+            //     } else {
+            //         if (!user) {
+            //             res.status(HttpStatus.NOT_FOUND).json({
+            //                 success: false,
+            //                 message: `Item Not Found`
+            //             });
+            //             return;
+            //         }
+            //         res.status(HttpStatus.OK).json({
+            //             success: true,
+            //             user: user
+            //         });
+            //     }
+            // } else if (Object(req.user).group.length == 0) {
+            if (!user) {
+                res.status(HttpStatus.NOT_FOUND).json({
+                    success: false,
+                    message: `Item Not Found`
                 });
-            } else {
-                const error: ErrorStructure = {
-                    code: 401,
-                    errorObj: { "message": "You are not authorized" }
-                };
-                next(error);
+                return;
             }
+            res.status(HttpStatus.OK).json({
+                success: true,
+                user: user
+            });
+            // } else {
+            //     const error: ErrorStructure = {
+            //         code: 401,
+            //         errorObj: { "message": "You are not authorized" }
+            //     };
+            //     next(error);
+            // }
 
 
 
@@ -313,51 +319,51 @@ userRouter.route('/:id')
                     const user = await userService.getById(req.params.id);
 
                     let validRole = 0;
-                    if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-                        for (const i of Object(req.user).group) {
-                            let temp = (await roleService.hasGroup(i.id));
-                            // console.log("Temp------>", req.body.roleids);
+                    // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+                    //     for (const i of Object(req.user).group) {
+                    //         let temp = (await roleService.hasGroup(i.id));
+                    //         // console.log("Temp------>", req.body.roleids);
 
-                            if (temp.some(item => (user.roleids.includes(item)))) {
-                                console.log("Valid Case");
+                    //         if (temp.some(item => (user.roleids.includes(item)))) {
+                    //             console.log("Valid Case");
 
-                                validRole = 1;
-                                break;
-                            }
-                        }
-                        if (validRole == 0) {
-                            const error: ErrorStructure = {
-                                code: 401,
-                                errorObj: { "message": "You are not authorized" }
-                            };
-                            next(error);
-                        } else {
-                            if (!user) {
-                                return res.status(HttpStatus.NOT_FOUND).json({
-                                    success: false,
-                                    message: `No Id Found`
-                                });
-                            }
-                            let mailOption = {
-                                to: user.email,
-                                subject: "Changes in your account",
-                                html: "<h4>There has been some changes in your account</h4>"
-                            };
-                            console.log("Mailing Options------>", mailOption);
+                    //             validRole = 1;
+                    //             break;
+                    //         }
+                    //     }
+                    //     if (validRole == 0) {
+                    //         const error: ErrorStructure = {
+                    //             code: 401,
+                    //             errorObj: { "message": "You are not authorized" }
+                    //         };
+                    //         next(error);
+                    //     } else {
+                    //         if (!user) {
+                    //             return res.status(HttpStatus.NOT_FOUND).json({
+                    //                 success: false,
+                    //                 message: `No Id Found`
+                    //             });
+                    //         }
+                    //         let mailOption = {
+                    //             to: user.email,
+                    //             subject: "Changes in your account",
+                    //             html: "<h4>There has been some changes in your account</h4>"
+                    //         };
+                    //         console.log("Mailing Options------>", mailOption);
 
-                            mailer(mailOption);
+                    //         mailer(mailOption);
 
-                            if (req.body.email) user.email = req.body.email;
-                            if (req.body.roleids) user.roleids = req.body.roleids;
+                    //         if (req.body.email) user.email = req.body.email;
+                    //         if (req.body.roleids) user.roleids = req.body.roleids;
 
-                            const updatedUser = await userService.update(user);
+                    //         const updatedUser = await userService.update(user);
 
-                            res.status(HttpStatus.OK).json({
-                                success: true,
-                                user: updatedUser
-                            });
-                        }
-                    } else if (Object(req.user).group.length == 0) {
+                    //         res.status(HttpStatus.OK).json({
+                    //             success: true,
+                    //             user: updatedUser
+                    //         });
+                    //     }
+                    // } else if (Object(req.user).group.length == 0) {
                         if (!user) {
                             return res.status(HttpStatus.NOT_FOUND).json({
                                 success: false,
@@ -382,23 +388,23 @@ userRouter.route('/:id')
                             success: true,
                             user: updatedUser
                         });
-                    } else {
-                        const error: ErrorStructure = {
-                            code: 401,
-                            errorObj: { "message": "You are not authorized" }
-                        };
-                        next(error);
-                    }
+                    // } else {
+                    //     const error: ErrorStructure = {
+                    //         code: 401,
+                    //         errorObj: { "message": "You are not authorized" }
+                    //     };
+                    //     next(error);
+                    // }
 
 
                 } catch (err) {
-                            const error: ErrorStructure = {
+                    const error: ErrorStructure = {
                         code: HttpStatus.BAD_REQUEST,
                         errorObj: err
                     };
                     next(error);
                 }
-            } else {  
+            } else {
                 const error: ErrorStructure = {
                     code: HttpStatus.BAD_REQUEST,
                     errorsArray: validationErrors.array()
@@ -420,42 +426,42 @@ userRouter.route('/:id')
                     const roleService = new RoleService();
                     const groupService = new GroupService();
                     let validRole = 0;
-                    if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
-                        for (const i of Object(req.user).group) {
-                            let temp = (await roleService.hasGroup(i.id));
-                            // console.log("Temp------>", req.body.roleids);
+                    // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
+                    //     for (const i of Object(req.user).group) {
+                    //         let temp = (await roleService.hasGroup(i.id));
+                    //         // console.log("Temp------>", req.body.roleids);
 
-                            if (temp.some(item => (user.roleids.includes(item)))) {
-                                console.log("Valid Case");
+                    //         if (temp.some(item => (user.roleids.includes(item)))) {
+                    //             console.log("Valid Case");
 
-                                validRole = 1;
-                                break;
-                            }
-                        }
-                        if (validRole == 0) {
-                            const error: ErrorStructure = {
-                                code: 401,
-                                errorObj: { "message": "You are not authorized" }
-                            };
-                            next(error);
-                        } else {
-                            if (!user) {
-                                return res.status(HttpStatus.NOT_FOUND).json({
-                                    success: false,
-                                    message: `No Id Found`
-                                });
-                            }
-                            // else{
-                            let recordId: string = req.params.id;
-                            // }
+                    //             validRole = 1;
+                    //             break;
+                    //         }
+                    //     }
+                    //     if (validRole == 0) {
+                    //         const error: ErrorStructure = {
+                    //             code: 401,
+                    //             errorObj: { "message": "You are not authorized" }
+                    //         };
+                    //         next(error);
+                    //     } else {
+                    //         if (!user) {
+                    //             return res.status(HttpStatus.NOT_FOUND).json({
+                    //                 success: false,
+                    //                 message: `No Id Found`
+                    //             });
+                    //         }
+                    //         // else{
+                    //         let recordId: string = req.params.id;
+                    //         // }
 
-                            const deleteRes = await userService.remove(recordId);
-                            res.status(HttpStatus.NO_CONTENT).json({
-                                success: true,
-                                deleteRes
-                            });
-                        }
-                    } else if (Object(req.user).group.length == 0) {
+                    //         const deleteRes = await userService.remove(recordId);
+                    //         res.status(HttpStatus.NO_CONTENT).json({
+                    //             success: true,
+                    //             deleteRes
+                    //         });
+                    //     }
+                    // } else if (Object(req.user).group.length == 0) {
                         if (!user) {
                             return res.status(HttpStatus.NOT_FOUND).json({
                                 success: false,
@@ -471,22 +477,22 @@ userRouter.route('/:id')
                             success: true,
                             deleteRes
                         });
-                    } else {
-                        const error: ErrorStructure = {
-                            code: 401,
-                            errorObj: { "message": "You are not authorized" }
-                        };
-                        next(error);
-                    }
+                    // } else {
+                    //     const error: ErrorStructure = {
+                    //         code: 401,
+                    //         errorObj: { "message": "You are not authorized" }
+                    //     };
+                    //     next(error);
+                    // }
 
                 } catch (err) {
-                            const error: ErrorStructure = {
+                    const error: ErrorStructure = {
                         code: HttpStatus.BAD_REQUEST,
                         errorObj: err
                     };
                     next(error);
                 }
-            } else {  
+            } else {
                 const error: ErrorStructure = {
                     code: HttpStatus.BAD_REQUEST,
                     errorsArray: validationErrors.array()

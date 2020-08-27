@@ -91,7 +91,8 @@ collectionRouter.route('/')
       //     data: finalResult
       //   });
       // } else if (Object(req.user).group.length == 0) {
-      const response = await collectionService.getAll();
+      
+      const response = await collectionService.getCollectionByGroup(req.user['filter']);
       res.status(HttpStatus.OK).json({
         success: true,
         data: response
@@ -127,15 +128,15 @@ collectionRouter.route('/')
           const response = await collectionService.insert(req.body);
           console.log("Response----->", response);
 
-          const groupService = new GroupService();
+          // const groupService = new GroupService();
           // if (Object(req.user).group.length > 0 && Object(Object(req.user).role[0]).name == "manager") {
           // let response = [];
-          for (const i of Object(req.user).group) {
-            let temp = (await groupService.getById(i.id));
-            temp.collectionids.push(Object(response).id);
-            groupService.update(temp);
+          // for (const i of Object(req.user).group) {
+          //   let temp = (await groupService.getById(i.id));
+          //   temp.collectionids.push(Object(response).id);
+          //   groupService.update(temp);
 
-          }
+          // }
           // }
           res.status(HttpStatus.OK).json({
             success: true,

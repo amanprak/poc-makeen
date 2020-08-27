@@ -33,49 +33,61 @@ export class AuthHandler {
       const userService = new UserService();
 
       try {
-        const user = await userService.getByEmail(jwt_payload.email); 
+        const user = await userService.getByEmail(jwt_payload.email);
 
         if (!user) {
           return next(null, false);
         }
-        let primaryRole : string='';
+        let primaryRole: string = '';
 
-        const primaryRoleSetter = (primaryRole:string,roleName:string):string=>{
-          if(primaryRole == '') return roleName;
-          else if(primaryRole == 'globalManger' || roleName == 'globalManger') return 'globalManager';
-          else if(primaryRole == 'group' || roleName == 'group') return 'group';
+        const primaryRoleSetter = (primaryRole: string, roleName: string): string => {
+          if (primaryRole == '') return roleName;
+          else if (primaryRole == 'globalManger' || roleName == 'globalManger') return 'globalManager';
+          else if (primaryRole == 'group' || roleName == 'group') return 'group';
           else return 'manager';
 
         }
         let role = [];
         let group = [];
+        let groupId: string = "";
         const roleService = new RoleService();
         const groupService = new GroupService();
         for (const i of user.roleids) {
-          console.log("Role---->",i);
-          console.log(await roleService.getById(i));
-          let currRole=await roleService.getById(i);
+          console.log("Role---->", i);
+          // console.log(await roleService.getById(i));
+          let currRole = await roleService.getById(i);
+          // roleService.getById(i).then(res=>{
+          //   console.log("Resilt--------_>",res);
+
+          // });
           role.push(Object(currRole));
-          group.push(Object(await groupService.getById(currRole.id)))
-          primaryRole = primaryRoleSetter(primaryRole,currRole.name);          
+          // console.log("Role Of User------>",currRole);
+          if (currRole.groupId) {
+            let currGroup = (await groupService.getById(currRole.groupId));
+            groupId = currGroup.id.toString();
+            group.push(Object(currGroup));
+          }
+          primaryRole = primaryRoleSetter(primaryRole, currRole.name);
         }
         // console.log("Primary Role----->",primaryRole);
-        
+
         // console.log("User Varialble in auth----->",user);
-        let tokenData : Object = {
+        let tokenData: Object = {
           id: user.id,
           email: user.email,
-          primaryRole : primaryRole,
+          roleId: user.roleids,
+          groupId: groupId,
+          primaryRole: primaryRole,
           role: role,
           group: group
         };
-        console.log("Token Data------>",tokenData);
-        
+        console.log("Token Data------>", tokenData);
+
         return next(undefined, tokenData);
 
       } catch (err) {
-        console.log("Error----->",err);
-        
+        console.log("Error----->", err);
+
         return next(null, false);
       }
     });
@@ -94,8 +106,8 @@ export class AuthHandler {
       id: user.id,
       email: user.email,
     }, this.superSecret, {
-        expiresIn: '5d',
-      });
+      expiresIn: '5d',
+    });
 
     return token;
 

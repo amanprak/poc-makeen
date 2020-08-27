@@ -1,5 +1,6 @@
 import { getManager, Repository } from 'typeorm';
 import { Groups } from '../entities/Groups';
+import { RoleService } from './roleService';
 
 export class GroupService {
     groupRepository: Repository<Groups>;
@@ -34,6 +35,24 @@ export class GroupService {
         try {
             const updatedGroup = await this.groupRepository.save(group);
             return updatedGroup;
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    async getByRole(id: string): Promise<string | undefined> {
+        try {
+            const roleService = new RoleService();
+            const roleDetails=Object(await roleService.getById(id));
+            console.log("Role Details----->",roleDetails);
+            if(roleDetails.groupId && roleDetails.groupId!=null){
+                const finalRes=await this.groupRepository.findOne(roleDetails.groupId);
+                return Object(finalRes).id;
+            }else{
+                return Promise.reject("Role Not Found");
+            }
+            
+            // return updatedGroup;
         } catch (error) {
             return Promise.reject(error);
         }

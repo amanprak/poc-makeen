@@ -78,4 +78,13 @@ export class CollectionService {
             return undefined;
         }
     }
+
+    async getCollectionByGroup(filter: any): Promise<Collection | undefined> {
+        const users = await this.collectionRepository.query(`SELECT * FROM collection c where c.id::VARCHAR IN (SELECT UNNEST(g.collectionids) FROM groups g ${filter.directStatement})`);
+        if (users && users.length > 0) {
+          return users;
+        } else {
+          return undefined;
+        }
+      }
 }

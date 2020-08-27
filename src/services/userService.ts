@@ -1,4 +1,4 @@
-import { getManager, Repository } from 'typeorm';
+import { getManager, Repository, getRepository } from 'typeorm';
 import { Users } from '../entities/Users';
 
 export class UserService {
@@ -61,13 +61,29 @@ export class UserService {
     }
   }
 
-  async getUserByGroup(groupId: string): Promise<Users | undefined> {
-    const users = await this.userRepository.query(`select distinct(u.*) from groups g inner join role r on g.id::VARCHAR = ANY(r.groupids) inner join users u on r.id::VARCHAR=ANY(u.roleids) where g.id='${groupId}'`);
+  // async getUserByGroup(groupId: string): Promise<Users | undefined> {
+  //   const users = await this.userRepository.query(`select distinct(u.*) from groups g inner join role r on g.id::VARCHAR = ANY(r.groupids) inner join users u on r.id::VARCHAR=ANY(u.roleids) where g.id='${groupId}'`);
+  //   if (users && users.length > 0) {
+  //     return users;
+  //   } else {
+  //     return undefined;
+  //   }
+  // }
+  async getUserByGroup(filter: any): Promise<Users | undefined> {
+    const users = await this.userRepository.query(`select distinct(u.*) from groups g inner join role r on g.id = r.groupids inner join users u on r.id::VARCHAR=ANY(u.roleids)${filter.directStatement}`);
     if (users && users.length > 0) {
       return users;
     } else {
       return undefined;
     }
   }
-
+  async query(tableName,queryStatement,queryCondition){
+    const res = await getRepository(Users)
+    .createQueryBuilder("user")
+    .select(tableName)
+    .from(Users, tableName)
+    .where(queryStatement, queryCondition)
+    .getMany();
+    return res;
+  }
 }
