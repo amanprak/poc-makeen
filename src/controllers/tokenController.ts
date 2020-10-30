@@ -7,7 +7,8 @@ import * as sw from '../config/swagger.js'
 import { ErrorStructure } from '../utilites/ErrorStructure';
 import { AuthHandler } from '../config/authHandler';
 
-
+import config from '../config/config';
+const { errors } = config;
 //POST BY EMAIL
 sw.swagger({
     api: "/token",
@@ -52,7 +53,7 @@ tokenRouter.route('/')
         } catch (err) { 
             const error: ErrorStructure = {
                 code: HttpStatus.BAD_REQUEST,
-                errorObj: err
+                errorObj: errors.bad_request
             };
             next(error);
         }

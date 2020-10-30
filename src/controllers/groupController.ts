@@ -6,6 +6,8 @@ import { GroupService } from '../services/groupService';
 import * as sw from '../config/swagger.js'
 import { ErrorStructure } from '../utilites/ErrorStructure';
 import { CollectionService } from '../services/collectionService';
+import config from '../config/config';
+const { errors } = config;
 
 // GET
 sw.swagger({
@@ -99,7 +101,7 @@ groupRouter.route('/')
 
       let error: ErrorStructure = {
         code: HttpStatus.BAD_REQUEST,
-        errorObj: err
+        errorObj: errors.bad_request
       };
       next(error);
     }
@@ -143,7 +145,7 @@ groupRouter.route('/')
         } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorObj: err
+            errorObj: errors.bad_request
           };
           next(error);
         }
@@ -188,7 +190,7 @@ groupRouter.route('/:id')
       } catch (err) {
         const error: ErrorStructure = {
           code: HttpStatus.BAD_REQUEST,
-          errorObj: err
+          errorObj: errors.bad_request
         };
         next(error);
       }
@@ -246,7 +248,7 @@ groupRouter.route('/:id')
         } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorObj: err
+            errorObj: errors.bad_request
           };
           next(error);
         }
@@ -294,7 +296,7 @@ groupRouter.route('/:id')
         } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorObj: err
+            errorObj: errors.bad_request
           };
           next(error);
         }
@@ -352,7 +354,7 @@ groupRouter.route('/push/:id')
         } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorObj: err
+            errorObj: errors.bad_request
           };
           next(error);
         }

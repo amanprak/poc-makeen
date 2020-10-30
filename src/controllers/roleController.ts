@@ -6,6 +6,8 @@ import * as sw from '../config/swagger.js'
 import { ErrorStructure } from '../utilites/ErrorStructure';
 import { GroupService } from '../services/groupService';
 
+import config from '../config/config';
+const { errors } = config;
 // GET
 sw.swagger({
   api: "/role",
@@ -94,7 +96,7 @@ roleRouter.route('/')
       } catch (err) {
         let error: ErrorStructure = {
           code: HttpStatus.BAD_REQUEST,
-          errorObj: err
+          errorObj: errors.bad_request
         };
         next(error);
       }
@@ -137,7 +139,7 @@ roleRouter.route('/')
 
             const error: ErrorStructure = {
               code: HttpStatus.BAD_REQUEST,
-              errorObj: err
+              errorObj: errors.bad_request
             };
             next(error);
           }
@@ -187,7 +189,7 @@ roleRouter.route('/:id')
         
         const error: ErrorStructure = {
           code: HttpStatus.BAD_REQUEST,
-          errorObj: err
+          errorObj: errors.bad_request
         };
         next(error);
       }
@@ -242,7 +244,7 @@ roleRouter.route('/:id')
           } catch (err) {
             const error: ErrorStructure = {
               code: HttpStatus.BAD_REQUEST,
-              errorObj: err
+              errorObj: errors.bad_request
             };
             next(error);
           }
@@ -290,7 +292,7 @@ roleRouter.route('/:id')
           } catch (err) {
             const error: ErrorStructure = {
               code: HttpStatus.BAD_REQUEST,
-              errorObj: err
+              errorObj: errors.bad_request
             };
             next(error);
           }
@@ -349,7 +351,7 @@ roleRouter.route('/push/:id')
           } catch (err) {
             const error: ErrorStructure = {
               code: HttpStatus.BAD_REQUEST,
-              errorObj: err
+              errorObj: errors.bad_request
             };
             next(error);
           }

@@ -1,8 +1,14 @@
 import * as dotenv from 'dotenv';
 
+
+import errors from '../assets/errors';
+import messages from '../assets/messages';
+
 dotenv.config();
 
 export default {
+    errors,
+    messages, 
     name:"POC Makeen",
     version:"v1",
     host: process.env.APP_HOST || '127.0.0.1',

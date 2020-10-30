@@ -1,9 +1,6 @@
 import { config } from './roleSheet';
-import { request } from 'http';
 import { Request, Response, NextFunction } from 'express';
 import * as HttpStatus from 'http-status-codes';
-// var url = require('url');
-import * as url from 'url';
 
 console.log("Data------>", config);
 

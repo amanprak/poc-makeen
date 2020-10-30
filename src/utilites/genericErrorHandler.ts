@@ -1,4 +1,3 @@
-import * as HttpStatus from 'http-status-codes';
 import { Request, Response, NextFunction } from 'express';
 
 

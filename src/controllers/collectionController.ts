@@ -4,8 +4,8 @@ import { body, validationResult } from 'express-validator/check';
 import { CollectionService } from '../services/collectionService';
 import * as sw from '../config/swagger.js'
 import { ErrorStructure } from '../utilites/ErrorStructure';
-import { GroupService } from '../services/groupService';
-import { request } from 'http';
+import config from '../config/config';
+const { errors } = config;
 
 // GET
 sw.swagger({
@@ -108,7 +108,7 @@ collectionRouter.route('/')
     } catch (err) {
       let error: ErrorStructure = {
         code: HttpStatus.BAD_REQUEST,
-        errorObj: err
+        errorObj: errors.bad_request
       };
       next(error);
     }
@@ -145,7 +145,7 @@ collectionRouter.route('/')
         } catch (err) {
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorObj: err
+            errorObj: errors.bad_request
           };
           next(error);
         }
@@ -225,7 +225,7 @@ collectionRouter.route('/:id')
     } catch (err) {
       const error: ErrorStructure = {
         code: HttpStatus.BAD_REQUEST,
-        errorObj: err
+        errorObj: errors.bad_request
       };
       next(error);
     }
@@ -301,7 +301,7 @@ collectionRouter.route('/:id')
           // db errors e.g. unique constraints etc
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorObj: err
+            errorObj: errors.bad_request
           };
           next(error);
         }
@@ -371,7 +371,7 @@ collectionRouter.route('/:id')
           // db errors e.g. unique constraints etc
           const error: ErrorStructure = {
             code: HttpStatus.BAD_REQUEST,
-            errorObj: err
+            errorObj: errors.bad_request
           };
           next(error);
         }

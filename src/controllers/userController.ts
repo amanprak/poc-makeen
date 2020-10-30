@@ -5,11 +5,11 @@ import { UserService } from '../services/userService';
 import * as sw from '../config/swagger.js'
 import { ErrorStructure } from '../utilites/ErrorStructure';
 import { RoleService } from '../services/roleService';
-import { AuthHandler } from '../config/authHandler';
 import { mailer } from '../utilites/mailerService';
-import e = require('express');
+// import e = require('express');
 import { GroupService } from '../services/groupService';
-
+import config from '../config/config';
+const { errors } = config;
 // GET
 sw.swagger({
     api: "/user",
@@ -100,7 +100,11 @@ userRouter.route('/')
             // } else if (Object(req.user).group.length == 0) {
             // const response = await userService.getAll();
             console.log("Req User-------->",req.user);
-            const response = await userService.getUserByGroup(req.user['filter']);
+            // const response = await userService.getUserByGroup(req.user['filter']);
+            const response = await userService.getAll();
+
+            console.log("Response--->",response);
+            
             res.status(HttpStatus.OK).json({
                 success: true,
                 data: response
@@ -121,7 +125,7 @@ userRouter.route('/')
 
             let error: ErrorStructure = {
                 code: HttpStatus.BAD_REQUEST,
-                errorObj: err
+                errorObj: errors.bad_request
             };
             next(error);
         }
@@ -194,7 +198,7 @@ userRouter.route('/')
 
                     const error: ErrorStructure = {
                         code: HttpStatus.BAD_REQUEST,
-                        errorObj: err
+                        errorObj: errors.bad_request
                     };
                     next(error);
                 }
@@ -291,7 +295,7 @@ userRouter.route('/:id')
         } catch (err) {
             const error: ErrorStructure = {
                 code: HttpStatus.BAD_REQUEST,
-                errorObj: err
+                errorObj: errors.bad_request
             };
             next(error);
         }
@@ -400,7 +404,7 @@ userRouter.route('/:id')
                 } catch (err) {
                     const error: ErrorStructure = {
                         code: HttpStatus.BAD_REQUEST,
-                        errorObj: err
+                        errorObj: errors.bad_request
                     };
                     next(error);
                 }
@@ -488,7 +492,7 @@ userRouter.route('/:id')
                 } catch (err) {
                     const error: ErrorStructure = {
                         code: HttpStatus.BAD_REQUEST,
-                        errorObj: err
+                        errorObj: errors.bad_request
                     };
                     next(error);
                 }

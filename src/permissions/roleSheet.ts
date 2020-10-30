@@ -11,7 +11,7 @@ const userAdmin = (dummy = 1, dummy1 = 1) => {
     return {
         directStatement: ` `,
         table: "user",
-        queryStatement: "1=1",
+        queryStatement: " 1=1",
         queryCondition: {}
     }
 }

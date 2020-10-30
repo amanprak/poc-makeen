@@ -70,7 +70,12 @@ export class UserService {
   //   }
   // }
   async getUserByGroup(filter: any): Promise<Users | undefined> {
-    const users = await this.userRepository.query(`select distinct(u.*) from groups g inner join role r on g.id = r.groupids inner join users u on r.id::VARCHAR=ANY(u.roleids)${filter.directStatement}`);
+    const users = await this.userRepository.query(`select distinct(u.*) from groups g inner join role r on g.id = r.groupids inner join users u on r.id::VARCHAR=ANY(u.roleids)${filter.directStatement}`).catch(err=>{
+      console.log("Error---->",err);
+      
+    });
+    console.log("Users----->",users);
+    
     if (users && users.length > 0) {
       return users;
     } else {
